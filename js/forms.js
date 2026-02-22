@@ -1,19 +1,19 @@
 // Form Initialization and Population
 
-function initializeHours() {
+function inicializarHorarios() {
     if (Object.keys(formData.hours).length === 0) {
         daysOfWeek.forEach(day => {
             formData.hours[day.key] = {
-                open: '09:00',
-                close: '18:00',
-                closed: day.key === 'sunday'
+                open: '',
+                close: '',
+                closed: true  // Start with all days closed
             };
         });
     }
-    renderHours();
+    renderizarHorarios();
 }
 
-function renderHours() {
+function renderizarHorarios() {
     const container = document.getElementById('hours-container');
     container.innerHTML = '';
     
@@ -80,22 +80,25 @@ function renderHours() {
                 statusBadge.textContent = '✕ Fechado';
             }
             
-            saveToStorage();
+            salvarNoArmazenamento();
+            atualizarProgresso();
         });
         
         document.getElementById(`open-${day.key}`).addEventListener('change', function(e) {
             formData.hours[day.key].open = e.target.value;
-            saveToStorage();
+            salvarNoArmazenamento();
+            atualizarProgresso();
         });
         
         document.getElementById(`close-${day.key}`).addEventListener('change', function(e) {
             formData.hours[day.key].close = e.target.value;
-            saveToStorage();
+            salvarNoArmazenamento();
+            atualizarProgresso();
         });
     });
 }
 
-function populateFormFields() {
+function preencherCamposFormulario() {
     document.getElementById('businessName').value = formData.businessName || '';
     document.getElementById('description').value = formData.description || '';
     document.getElementById('phone').value = formData.phone || '';
@@ -129,7 +132,7 @@ function populateFormFields() {
         }
     });
     
-    renderCategories();
+    renderizarCategorias();
     
     if (formData.logo) {
         document.getElementById('logo-image').src = formData.logo;
@@ -137,15 +140,19 @@ function populateFormFields() {
         document.getElementById('logo-placeholder').classList.add('hidden');
     }
     
-    document.getElementById('primary-color').value = formData.primaryColor;
-    document.getElementById('primary-color-text').value = formData.primaryColor;
-    document.getElementById('secondary-color').value = formData.secondaryColor;
-    document.getElementById('secondary-color-text').value = formData.secondaryColor;
-    document.getElementById('primary-preview').style.backgroundColor = formData.primaryColor;
-    document.getElementById('secondary-preview').style.backgroundColor = formData.secondaryColor;
+    // Set default colors in UI if formData is empty
+    const defaultPrimary = formData.primaryColor || '#a855f7';
+    const defaultSecondary = formData.secondaryColor || '#ec4899';
+    
+    document.getElementById('primary-color').value = defaultPrimary;
+    document.getElementById('primary-color-text').value = defaultPrimary;
+    document.getElementById('secondary-color').value = defaultSecondary;
+    document.getElementById('secondary-color-text').value = defaultSecondary;
+    document.getElementById('primary-preview').style.backgroundColor = defaultPrimary;
+    document.getElementById('secondary-preview').style.backgroundColor = defaultSecondary;
 }
 
-function renderCategories() {
+function renderizarCategorias() {
     const container = document.getElementById('categories-list');
     container.innerHTML = '';
     
@@ -154,7 +161,7 @@ function renderCategories() {
         tag.className = 'category-tag inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full font-medium';
         tag.innerHTML = `
             ${category}
-            <button type="button" class="hover:bg-purple-200 rounded-full p-1 transition-all" onclick="removeCategory(${index})">
+            <button type="button" class="hover:bg-purple-200 rounded-full p-1 transition-all" onclick="removerCategoria(${index})">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -164,21 +171,21 @@ function renderCategories() {
     });
 }
 
-function removeCategory(index) {
+function removerCategoria(index) {
     formData.categories.splice(index, 1);
-    renderCategories();
-    saveToStorage();
+    renderizarCategorias();
+    salvarNoArmazenamento();
 }
 
-function addCategory() {
+function adicionarCategoria() {
     const input = document.getElementById('category-input');
     const value = input.value.trim();
     
     if (value && !formData.categories.includes(value)) {
         formData.categories.push(value);
         input.value = '';
-        renderCategories();
-        clearError(document.getElementById('categories-error'));
-        saveToStorage();
+        renderizarCategorias();
+        limparErro(document.getElementById('categories-error'));
+        salvarNoArmazenamento();
     }
 }

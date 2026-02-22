@@ -1,7 +1,7 @@
 // Visual Identity Interactive Features
 
 // Rotate cubes on hover
-function setupCubeInteraction() {
+function configurarInteracaoCubo() {
     const cubePrimary = document.querySelector('#cube-primary .cube');
     const cubeSecondary = document.querySelector('#cube-secondary .cube');
     
@@ -53,7 +53,7 @@ function setupCubeInteraction() {
 }
 
 // Auto-rotate cubes animation
-function startCubeAnimation() {
+function iniciarAnimacaoCubo() {
     const cubePrimary = document.querySelector('#cube-primary .cube');
     const cubeSecondary = document.querySelector('#cube-secondary .cube');
     
@@ -73,7 +73,7 @@ function startCubeAnimation() {
 }
 
 // Update cube colors when color picker changes
-function updateCubeColors(color, type) {
+function atualizarCoresCubo(color, type) {
     const cube = type === 'primary' ? document.querySelector('#cube-primary .cube') : document.querySelector('#cube-secondary .cube');
     const hexDisplay = type === 'primary' ? document.getElementById('primary-hex-display') : document.getElementById('secondary-hex-display');
     
@@ -81,10 +81,10 @@ function updateCubeColors(color, type) {
     
     // Generate color variations for cube faces
     const baseColor = color;
-    const darkerColor = adjustColor(color, -20);
-    const darkestColor = adjustColor(color, -40);
-    const lighterColor = adjustColor(color, 20);
-    const lightestColor = adjustColor(color, 40);
+    const darkerColor = ajustarCor(color, -20);
+    const darkestColor = ajustarCor(color, -40);
+    const lighterColor = ajustarCor(color, 20);
+    const lightestColor = ajustarCor(color, 40);
     
     const faces = cube.querySelectorAll('.cube-face');
     if (faces.length >= 6) {
@@ -102,7 +102,7 @@ function updateCubeColors(color, type) {
 }
 
 // Adjust color brightness
-function adjustColor(color, amount) {
+function ajustarCor(color, amount) {
     const num = parseInt(color.replace('#', ''), 16);
     const r = Math.max(0, Math.min(255, (num >> 16) + amount));
     const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
@@ -110,11 +110,12 @@ function adjustColor(color, amount) {
     return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
 }
 
-// Apply color palette
-function applyPalette(primaryColor, secondaryColor) {
+// Apply color palette (make it globally accessible)
+window.aplicarPaletaCores = (primaryColor, secondaryColor) => {
     // Update form data
     formData.primaryColor = primaryColor;
     formData.secondaryColor = secondaryColor;
+    formData.colorsSelected = true;  // Mark as user-selected
     
     // Update color inputs
     document.getElementById('primary-color').value = primaryColor;
@@ -126,45 +127,53 @@ function applyPalette(primaryColor, secondaryColor) {
     document.getElementById('primary-preview').style.backgroundColor = primaryColor;
     document.getElementById('secondary-preview').style.backgroundColor = secondaryColor;
     
-    // Update 3D cubes
-    updateCubeColors(primaryColor, 'primary');
-    updateCubeColors(secondaryColor, 'secondary');
+    // Update cubes
+    atualizarCoresCubo(primaryColor, 'primary');
+    atualizarCoresCubo(secondaryColor, 'secondary');
     
     // Save to storage
-    saveToStorage();
+    salvarNoArmazenamento();
+    
+    // Update progress
+    atualizarProgresso();
     
     // Show feedback
-    showPaletteAppliedMessage();
-}
+    mostrarMensagemPaletaAplicada();
+};
 
-function showPaletteAppliedMessage() {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'fixed top-24 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-fadeIn';
-    messageDiv.innerHTML = '🎨 Paleta aplicada com sucesso!';
-    
-    document.body.appendChild(messageDiv);
-    
-    setTimeout(() => {
-        messageDiv.style.opacity = '0';
-        messageDiv.style.transition = 'opacity 0.3s';
-        setTimeout(() => messageDiv.remove(), 300);
-    }, 2000);
+function mostrarMensagemPaletaAplicada() {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '🎨 Paleta aplicada!',
+        text: 'Cores atualizadas com sucesso.',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-xl'
+        }
+    });
 }
 
 // Initialize visual identity features
-function initVisualIdentity() {
+function inicializarIdentidadeVisual() {
     // Setup cube interaction
-    setupCubeInteraction();
+    configurarInteracaoCubo();
     
     // Start auto-rotation animation
-    startCubeAnimation();
+    iniciarAnimacaoCubo();
     
-    // Update cubes with current colors
+    // Update cubes with current colors (use defaults if empty)
     const primaryColor = formData.primaryColor || '#a855f7';
     const secondaryColor = formData.secondaryColor || '#ec4899';
     
-    updateCubeColors(primaryColor, 'primary');
-    updateCubeColors(secondaryColor, 'secondary');
+    atualizarCoresCubo(primaryColor, 'primary');
+    atualizarCoresCubo(secondaryColor, 'secondary');
+    
+    // Only save to formData if user has actually selected colors
+    // (this prevents counting step 4 as complete on initial load)
 }
 
 // Call init when step 4 becomes active
@@ -174,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
         mutations.forEach(function(mutation) {
             const step4 = document.getElementById('step-4');
             if (step4 && step4.classList.contains('active')) {
-                initVisualIdentity();
+                inicializarIdentidadeVisual();
                 observer.disconnect();
             }
         });
@@ -190,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         const step4 = document.getElementById('step-4');
         if (step4 && step4.classList.contains('active')) {
-            initVisualIdentity();
+            inicializarIdentidadeVisual();
         }
     }, 100);
 });

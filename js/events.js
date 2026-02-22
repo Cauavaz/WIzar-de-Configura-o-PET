@@ -1,18 +1,18 @@
 // Event Listeners Setup
 
-function setupEventListeners() {
+function configurarEventListeners() {
     // Navigation buttons
-    document.getElementById('prev-btn').addEventListener('click', previousStep);
-    document.getElementById('next-btn').addEventListener('click', nextStep);
-    document.getElementById('publish-btn').addEventListener('click', publishSite);
+    document.getElementById('prev-btn').addEventListener('click', passoAnterior);
+    document.getElementById('next-btn').addEventListener('click', proximoPasso);
+    document.getElementById('publish-btn').addEventListener('click', publicarSite);
     
     // Step 1: Basic Info
     ['businessName', 'description', 'phone', 'whatsapp', 'email', 'address'].forEach(field => {
         const element = document.getElementById(field);
         element.addEventListener('input', function(e) {
             formData[field] = e.target.value;
-            clearError(element);
-            saveToStorage();
+            limparErro(element);
+            salvarNoArmazenamento();
         });
     });
     
@@ -38,8 +38,8 @@ function setupEventListeners() {
                 }
             }
             
-            clearError(document.getElementById('delivery-error'));
-            saveToStorage();
+            limparErro(document.getElementById('delivery-error'));
+            salvarNoArmazenamento();
         });
     });
     
@@ -65,18 +65,33 @@ function setupEventListeners() {
                 }
             }
             
-            clearError(document.getElementById('payment-error'));
-            saveToStorage();
+            limparErro(document.getElementById('payment-error'));
+            salvarNoArmazenamento();
         });
     });
     
     // Step 3: Categories
-    document.getElementById('add-category').addEventListener('click', addCategory);
+    document.getElementById('add-category').addEventListener('click', adicionarCategoria);
     document.getElementById('category-input').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            addCategory();
+            adicionarCategoria();
         }
+    });
+    
+    // Step 3: Hours
+    Object.keys(formData.hours).forEach(day => {
+        document.getElementById(`open-${day}`).addEventListener('change', function(e) {
+            formData.hours[day].open = e.target.value;
+            salvarNoArmazenamento();
+            atualizarProgresso();
+        });
+        
+        document.getElementById(`close-${day}`).addEventListener('change', function(e) {
+            formData.hours[day].close = e.target.value;
+            salvarNoArmazenamento();
+            atualizarProgresso();
+        });
     });
     
     // Step 4: Logo upload
@@ -89,7 +104,7 @@ function setupEventListeners() {
                 document.getElementById('logo-image').src = event.target.result;
                 document.getElementById('logo-preview').classList.remove('hidden');
                 document.getElementById('logo-placeholder').classList.add('hidden');
-                saveToStorage();
+                salvarNoArmazenamento();
             };
             reader.readAsDataURL(file);
         }
@@ -103,49 +118,75 @@ function setupEventListeners() {
     
     primaryColor.addEventListener('input', function(e) {
         const color = e.target.value;
+        
         formData.primaryColor = color;
+        formData.colorsSelected = true;  // Mark as user-selected
         primaryColorText.value = color;
-        document.getElementById('primary-preview').style.backgroundColor = color;
-        if (typeof updateCubeColors === 'function') {
-            updateCubeColors(color, 'primary');
+        
+        // Update preview box
+        const previewBox = document.getElementById('primary-preview');
+        if (previewBox) {
+            previewBox.style.backgroundColor = color;
         }
-        saveToStorage();
+        
+        // Update 3D cubes
+        if (typeof atualizarCoresCubo === 'function') {
+            atualizarCoresCubo(color, 'primary');
+        }
+        
+        salvarNoArmazenamento();
+        atualizarProgresso();
     });
     
     primaryColorText.addEventListener('input', function(e) {
         const color = e.target.value;
         if (/^#[0-9A-F]{6}$/i.test(color)) {
             formData.primaryColor = color;
+            formData.colorsSelected = true;  // Mark as user-selected
             primaryColor.value = color;
             document.getElementById('primary-preview').style.backgroundColor = color;
-            if (typeof updateCubeColors === 'function') {
-                updateCubeColors(color, 'primary');
+            if (typeof atualizarCoresCubo === 'function') {
+                atualizarCoresCubo(color, 'primary');
             }
-            saveToStorage();
+            salvarNoArmazenamento();
+            atualizarProgresso();
         }
     });
     
     secondaryColor.addEventListener('input', function(e) {
         const color = e.target.value;
+        
         formData.secondaryColor = color;
+        formData.colorsSelected = true;  // Mark as user-selected
         secondaryColorText.value = color;
-        document.getElementById('secondary-preview').style.backgroundColor = color;
-        if (typeof updateCubeColors === 'function') {
-            updateCubeColors(color, 'secondary');
+        
+        // Update preview box
+        const previewBox = document.getElementById('secondary-preview');
+        if (previewBox) {
+            previewBox.style.backgroundColor = color;
         }
-        saveToStorage();
+        
+        // Update 3D cubes
+        if (typeof atualizarCoresCubo === 'function') {
+            atualizarCoresCubo(color, 'secondary');
+        }
+        
+        salvarNoArmazenamento();
+        atualizarProgresso();
     });
     
     secondaryColorText.addEventListener('input', function(e) {
         const color = e.target.value;
         if (/^#[0-9A-F]{6}$/i.test(color)) {
             formData.secondaryColor = color;
+            formData.colorsSelected = true;  // Mark as user-selected
             secondaryColor.value = color;
             document.getElementById('secondary-preview').style.backgroundColor = color;
-            if (typeof updateCubeColors === 'function') {
-                updateCubeColors(color, 'secondary');
+            if (typeof atualizarCoresCubo === 'function') {
+                atualizarCoresCubo(color, 'secondary');
             }
-            saveToStorage();
+            salvarNoArmazenamento();
+            atualizarProgresso();
         }
     });
 }

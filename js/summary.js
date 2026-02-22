@@ -1,6 +1,6 @@
-// Summary Display Functions
+// Exibição do resumo final
 
-function showSummary() {
+function mostrarResumo() {
     const deliveryLabels = {
         'own': 'Delivery Próprio',
         'third-party': 'Delivery Terceiros',
@@ -46,7 +46,7 @@ function showSummary() {
                     </svg>
                     Informações Básicas
                 </h3>
-                <button onclick="editStep(1)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
+                <button onclick="editarPasso(1)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
@@ -89,7 +89,7 @@ function showSummary() {
                     </svg>
                     Horários
                 </h3>
-                <button onclick="editStep(2)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
+                <button onclick="editarPasso(2)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
@@ -110,7 +110,7 @@ function showSummary() {
                     </svg>
                     Entrega e Pagamento
                 </h3>
-                <button onclick="editStep(3)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
+                <button onclick="editarPasso(3)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
@@ -147,35 +147,54 @@ function showSummary() {
                     </svg>
                     Identidade Visual
                 </h3>
-                <button onclick="editStep(4)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
+                <button onclick="editarPasso(4)" class="text-purple-600 hover:text-purple-700 flex items-center gap-1 text-sm font-semibold">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                     Editar
                 </button>
             </div>
-            <div class="flex flex-col md:flex-row gap-6">
+            <!-- Grid Layout: Logo (left) + Color Cubes (right) -->
+            <div class="grid ${formData.logo ? 'grid-cols-2' : 'grid-cols-1'} gap-6 items-center">
                 ${formData.logo ? `
-                    <div class="w-40 h-40 border-2 border-gray-300 rounded-xl p-4 flex items-center justify-center bg-white">
-                        <img src="${formData.logo}" alt="Logo" class="max-w-full max-h-full object-contain">
+                    <!-- Logo Section -->
+                    <div class="flex items-center justify-center bg-white rounded-2xl p-8 border-2 border-gray-300 shadow-lg">
+                        <img src="${formData.logo}" alt="Logo" class="max-w-full max-h-64 object-contain">
                     </div>
                 ` : ''}
-                <div class="flex-1">
-                    <div class="flex gap-6 items-center">
-                        <div>
-                            <p class="text-sm text-gray-600 mb-2">Cor Primária</p>
-                            <div class="flex items-center gap-2">
-                                <div class="w-16 h-16 rounded-xl border-2 border-gray-300 shadow-lg" style="background-color: ${formData.primaryColor}"></div>
-                                <span class="font-mono text-sm font-semibold text-gray-700">${formData.primaryColor}</span>
+                
+                <!-- Color Cubes Section -->
+                <div class="flex ${formData.logo ? 'flex-col' : 'flex-row'} items-center justify-center gap-8">
+                    <!-- Primary Color Cube -->
+                    <div class="text-center">
+                        <div class="cube-container mb-10" style="perspective: 1000px;">
+                            <div class="cube" id="summary-cube-primary" style="width: 110px; height: 110px; position: relative; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(30deg); transition: transform 0.5s;">
+                                <div class="cube-face front" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; border: 2px solid rgba(255,255,255,0.3); transform: translateZ(55px);"></div>
+                                <div class="cube-face back" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; opacity: 0.8; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(180deg) translateZ(55px);"></div>
+                                <div class="cube-face right" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; opacity: 0.6; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(90deg) translateZ(55px);"></div>
+                                <div class="cube-face left" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; opacity: 0.9; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(-90deg) translateZ(55px);"></div>
+                                <div class="cube-face top" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; opacity: 0.95; border: 2px solid rgba(255,255,255,0.3); transform: rotateX(90deg) translateZ(55px);"></div>
+                                <div class="cube-face bottom" style="position: absolute; width: 110px; height: 110px; background: ${formData.primaryColor}; opacity: 0.5; border: 2px solid rgba(255,255,255,0.3); transform: rotateX(-90deg) translateZ(55px);"></div>
                             </div>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-600 mb-2">Cor Secundária</p>
-                            <div class="flex items-center gap-2">
-                                <div class="w-16 h-16 rounded-xl border-2 border-gray-300 shadow-lg" style="background-color: ${formData.secondaryColor}"></div>
-                                <span class="font-mono text-sm font-semibold text-gray-700">${formData.secondaryColor}</span>
+                        <p class="text-gray-800 text-base font-bold mb-1">Cor Primária</p>
+                        <p class="text-gray-600 text-sm font-mono">${formData.primaryColor}</p>
+                    </div>
+
+                    <!-- Secondary Color Cube -->
+                    <div class="text-center">
+                        <div class="cube-container mb-10" style="perspective: 1000px;">
+                            <div class="cube" id="summary-cube-secondary" style="width: 110px; height: 110px; position: relative; transform-style: preserve-3d; transform: rotateX(-20deg) rotateY(-30deg); transition: transform 0.5s;">
+                                <div class="cube-face front" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; border: 2px solid rgba(255,255,255,0.3); transform: translateZ(55px);"></div>
+                                <div class="cube-face back" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; opacity: 0.8; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(180deg) translateZ(55px);"></div>
+                                <div class="cube-face right" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; opacity: 0.6; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(90deg) translateZ(55px);"></div>
+                                <div class="cube-face left" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; opacity: 0.9; border: 2px solid rgba(255,255,255,0.3); transform: rotateY(-90deg) translateZ(55px);"></div>
+                                <div class="cube-face top" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; opacity: 0.95; border: 2px solid rgba(255,255,255,0.3); transform: rotateX(90deg) translateZ(55px);"></div>
+                                <div class="cube-face bottom" style="position: absolute; width: 110px; height: 110px; background: ${formData.secondaryColor}; opacity: 0.5; border: 2px solid rgba(255,255,255,0.3); transform: rotateX(-90deg) translateZ(55px);"></div>
                             </div>
                         </div>
+                        <p class="text-gray-800 text-base font-bold mb-1">Cor Secundária</p>
+                        <p class="text-gray-600 text-sm font-mono">${formData.secondaryColor}</p>
                     </div>
                 </div>
             </div>
@@ -211,4 +230,28 @@ function showSummary() {
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Add hover effects to 3D cubes in summary
+    setTimeout(() => {
+        const primaryCube = document.getElementById('summary-cube-primary');
+        const secondaryCube = document.getElementById('summary-cube-secondary');
+        
+        if (primaryCube) {
+            primaryCube.addEventListener('mouseenter', function() {
+                this.style.transform = 'rotateX(-20deg) rotateY(210deg) scale(1.1)';
+            });
+            primaryCube.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotateX(-20deg) rotateY(30deg) scale(1)';
+            });
+        }
+        
+        if (secondaryCube) {
+            secondaryCube.addEventListener('mouseenter', function() {
+                this.style.transform = 'rotateX(-20deg) rotateY(-210deg) scale(1.1)';
+            });
+            secondaryCube.addEventListener('mouseleave', function() {
+                this.style.transform = 'rotateX(-20deg) rotateY(-30deg) scale(1)';
+            });
+        }
+    }, 100);
 }
