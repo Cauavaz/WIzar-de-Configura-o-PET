@@ -67,7 +67,7 @@ function atualizarWidgetSidebar() {
         if (estimatedMinutes === 0) {
             timeEstimate.textContent = '✓ Pronto';
         } else {
-            timeEstimate.textContent = `~${estimatedMinutes}min`;
+            timeEstimate.textContent = `${estimatedMinutes}min`;
         }
     }
     
