@@ -81,3 +81,34 @@ function validarPasso(step) {
     
     return isValid;
 }
+
+function validarTodosPassos() {
+    // Validar Passo 1: Informações Básicas
+    const passo1Valido = formData.businessName.trim() !== '' &&
+                         formData.description.trim() !== '' &&
+                         formData.phone.trim() !== '' &&
+                         formData.whatsapp.trim() !== '' &&
+                         formData.email.trim() !== '' &&
+                         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) &&
+                         formData.address.trim() !== '';
+    
+    // Validar Passo 2: Horários (pelo menos um dia aberto)
+    let temDiaAberto = false;
+    Object.values(formData.hours).forEach(day => {
+        if (!day.closed && day.open && day.close) {
+            temDiaAberto = true;
+        }
+    });
+    
+    // Validar Passo 3: Entrega e Pagamento
+    const passo3Valido = formData.deliveryMethods.length > 0 &&
+                         formData.paymentMethods.length > 0 &&
+                         formData.categories.length > 0;
+    
+    // Validar Passo 4: Identidade Visual
+    const passo4Valido = formData.primaryColor && formData.primaryColor.trim() !== '' &&
+                         formData.secondaryColor && formData.secondaryColor.trim() !== '' &&
+                         formData.logo;
+    
+    return passo1Valido && temDiaAberto && passo3Valido && passo4Valido;
+}

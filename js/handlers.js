@@ -1,18 +1,36 @@
 // Navegação entre passos do wizard
 
 function proximoPasso() {
+    // Validar o passo atual antes de avançar
+    if (!validarPasso(currentStep)) {
+        return;
+    }
+    
     if (currentStep === totalSteps) {
+        // Validar todos os passos antes de mostrar o resumo
+        if (!validarTodosPassos()) {
+            Swal.fire({
+                title: 'Passos Incompletos',
+                html: '<p class="text-lg">Você precisa completar todos os passos obrigatórios antes de ver o resumo.</p><p class="text-sm text-gray-600 mt-2">Clique no widget "Progresso Geral" para ver o que está faltando.</p>',
+                icon: 'warning',
+                confirmButtonColor: '#a855f7',
+                confirmButtonText: 'Entendi',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl px-6 py-3 font-semibold'
+                }
+            });
+            return;
+        }
         mostrarResumo();
         atualizarProgresso();
         return;
     }
     
-    if (validarPasso(currentStep)) {
-        currentStep++;
-        atualizarExibicaoPasso();
-        atualizarSidebarAtivo();
-        atualizarProgresso();
-    }
+    currentStep++;
+    atualizarExibicaoPasso();
+    atualizarSidebarAtivo();
+    atualizarProgresso();
 }
 
 function passoAnterior() {
@@ -35,6 +53,26 @@ function navegarParaPasso(step) {
             alternarSidebar();
         }
     }
+}
+
+function mostrarResumoDoMenu() {
+    // Validar todos os passos antes de mostrar o resumo
+    if (!validarTodosPassos()) {
+        Swal.fire({
+            title: 'Passos Incompletos',
+            html: '<p class="text-lg">Você precisa completar todos os passos obrigatórios antes de ver o resumo.</p><p class="text-sm text-gray-600 mt-2">Clique no widget "Progresso Geral" para ver o que está faltando.</p>',
+            icon: 'warning',
+            confirmButtonColor: '#a855f7',
+            confirmButtonText: 'Entendi',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'rounded-xl px-6 py-3 font-semibold'
+            }
+        });
+        return;
+    }
+    
+    mostrarResumo();
 }
 
 function editarPasso(step) {
