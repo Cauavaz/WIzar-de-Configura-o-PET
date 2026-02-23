@@ -1,4 +1,4 @@
-# 🐾 Wizard de Configuração - Pet Food Delivery
+# 🐾 Wizard de Configuração
 
 Sistema completo de configuração para criação de sites de Pet Food Delivery com wizard interativo de 5 etapas. Desenvolvido com **HTML5, Tailwind CSS, JavaScript Vanilla e SweetAlert2** - sem frameworks pesados.
 
